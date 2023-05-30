@@ -52,4 +52,10 @@ Thumbs.db
 .env.dev
 .env.prod
 
+# ingore src floder with all content insed
+src/
+
+# ignore .storybook floder with all content insed
+.storybook/
+
 

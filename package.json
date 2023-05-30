@@ -1,6 +1,6 @@
 {
   "name": "use-smart",
-  "version": "0.2.51",
+  "version": "0.2.52",
   "description": " A react hook to generate and manage your form in a smart way",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -8,6 +8,7 @@
     "dist"
   ],
   "scripts": {
+    "start": "react-scripts start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -37,11 +38,15 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-terser": "^7.0.2",
-    "storybook": "^7.0.18"
+    "storybook": "^7.0.18",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
   },
   "peerDependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
   },
   "keywords": [
     "react-hook",
@@ -58,5 +63,17 @@
   "dependencies": {
     "immer": "^10.0.2",
     "use-immer": "^0.9.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
