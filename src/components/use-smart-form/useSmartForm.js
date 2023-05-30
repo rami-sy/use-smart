@@ -31,29 +31,40 @@ const useSmartForm = (initialFormFormat, onSubmit) => {
 
     if (fieldConfig && fieldConfig.validation) {
       const { validation } = fieldConfig;
+      const errors = {}; // Create an empty errors object
 
       if (validation.minLength && value.length < validation.minLength) {
-        // Handle validation error for minLength
-        return;
+        errors[
+          key
+        ] = `Field must be at least ${validation.minLength} characters long.`;
       }
 
       if (validation.maxLength && value.length > validation.maxLength) {
-        // Handle validation error for maxLength
-        return;
+        errors[
+          key
+        ] = `Field must not exceed ${validation.maxLength} characters.`;
       }
 
       if (validation.min && parseFloat(value) < validation.min) {
-        // Handle validation error for min
-        return;
+        errors[
+          key
+        ] = `Value must be greater than or equal to ${validation.min}.`;
       }
 
       if (validation.max && parseFloat(value) > validation.max) {
-        // Handle validation error for max
-        return;
+        errors[key] = `Value must be less than or equal to ${validation.max}.`;
       }
-    }
 
-    dispatch({ type: "updateField", key, payload: value });
+      // Dispatch an "updateError" action to update the errors in the state
+      dispatch({ type: "updateError", key, payload: errors[key] });
+
+      // Update the field value only if there are no errors
+      if (!errors[key]) {
+        dispatch({ type: "updateField", key, payload: value });
+      }
+    } else {
+      dispatch({ type: "updateField", key, payload: value });
+    }
   };
   const handleSubmit = (e) => {
     e.preventDefault();
