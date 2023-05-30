@@ -96,6 +96,7 @@ const useSmartForm = (
     }
     dispatch({ type: "updateField", key, payload: value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: "updateLoading", payload: true });
@@ -129,6 +130,7 @@ const useSmartForm = (
           options,
           placeholder = fieldName.toLocaleUpperCase(),
           className = "",
+          label,
           format, // Add the format property
         } = fieldValue;
         const formattedValue = format
@@ -138,29 +140,34 @@ const useSmartForm = (
         switch (type) {
           case "text":
             return (
-              <input
-                key={fieldName}
-                type={type}
-                value={formattedValue}
-                placeholder={placeholder}
-                onChange={(e) => handleChange(fieldName, e.target.value)}
-                className={className}
-              />
+              <div key={fieldName}>
+                <label htmlFor={fieldName}>{label}</label>
+                <input
+                  id={fieldName}
+                  type={type}
+                  value={formattedValue}
+                  placeholder={placeholder}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                />
+              </div>
             );
           case "checkbox":
             return (
-              <label key={fieldName} className={className}>
+              <div key={fieldName} className={className}>
+                <label htmlFor={fieldName}>{label}</label>
                 <input
+                  id={fieldName}
                   type="checkbox"
                   checked={formattedValue}
                   onChange={(e) => handleChange(fieldName, e.target.checked)}
                 />
-                {fieldName}
-              </label>
+              </div>
             );
           case "radio":
             return (
               <div key={fieldName} className={className}>
+                <label>{label}</label>
                 {options.map((option) => (
                   <label key={option}>
                     <input
@@ -176,40 +183,48 @@ const useSmartForm = (
             );
           case "select":
             return (
-              <select
-                key={fieldName}
-                value={formattedValue}
-                onChange={(e) => handleChange(fieldName, e.target.value)}
-                className={className}
-              >
-                {options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              <div key={fieldName} className={className}>
+                <label htmlFor={fieldName}>{label}</label>
+                <select
+                  id={fieldName}
+                  value={formattedValue}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                >
+                  {options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
             );
           default:
             return (
-              <input
-                key={fieldName}
-                type="text"
-                value={formattedValue}
-                placeholder={placeholder}
-                onChange={(e) => handleChange(fieldName, e.target.value)}
-                className={className}
-              />
+              <div key={fieldName}>
+                <label htmlFor={fieldName}>{label}</label>
+                <input
+                  id={fieldName}
+                  type="text"
+                  value={formattedValue}
+                  placeholder={placeholder}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                />
+              </div>
             );
         }
       } else {
         return (
-          <input
-            key={fieldName}
-            type="text"
-            placeholder={fieldName.toLocaleUpperCase()}
-            value={data.state[fieldName]}
-            onChange={(e) => handleChange(fieldName, e.target.value)}
-          />
+          <div key={fieldName}>
+            <label htmlFor={fieldName}>{fieldName}</label>
+            <input
+              id={fieldName}
+              type="text"
+              placeholder={fieldName.toLocaleUpperCase()}
+              value={data.state[fieldName]}
+              onChange={(e) => handleChange(fieldName, e.target.value)}
+            />
+          </div>
         );
       }
     });
