@@ -76,8 +76,13 @@ in example above, you can use `onSubmit` prop to get form state. no need to use 
 - Handles form state
 - Handles form submission
 - Generates form inputs based on a form format object
-- Dont need to change the state of the component
-- Handles form validation
+- Supports different input types such as text, checkbox, radio, and select
+- Customizable options for submit button, error display, and more
+- Supports custom form inputs
+- Provides loading state feedback
+- Provides a reset function to reset the form to its initial state
+- Supports form validation rules such as required, minLength, maxLength, and pattern
+- Provides a summary of form errors
 
 ## Customizing Form Inputs
 
@@ -140,6 +145,51 @@ const MyComponent = () => {
 ```
 
 In this example, the name field uses a text input with a custom placeholder. The email field uses an email input type, and the password field uses a password input type with a minimum length validation rule. The `useSmartForm` hook will generate the form inputs based on this configuration object.
+
+```jsx
+import React from "react";
+import { useSmartForm } from "use-smart";
+
+const MyComponent = () => {
+  const handleSubmit = (formData) => {
+    console.log("Form submitted:", formData);
+  };
+
+  const initialFormFormat = {
+    email: "",
+    password: {
+      type: "password",
+      className: "password-input",
+    },
+  };
+
+  const options = {
+    hideSubmitButton: false,
+    disableValidation: true,
+    customSubmitButtonText: "Save",
+    showErrorSummary: true,
+  };
+
+  const { form, state, isLoading, reset } = useSmartForm(
+    initialFormFormat,
+    handleSubmit,
+    options
+  );
+
+  return (
+    <div>
+      {form}
+      {isLoading ? <p>Loading...</p> : null}
+      <button onClick={reset}>Reset</button>
+      <pre>{JSON.stringify(state, null, 2)}</pre>
+    </div>
+  );
+};
+```
+
+In this example, we've added options to customize the behavior of the form. The `hideSubmitButton` option determines whether to show the submit button. The `disableValidation` option disables form validation. The `customSubmitButtonText` option allows specifying a custom text for the submit button. The `showErrorSummary` option controls whether to show a summary of form errors.
+
+The `reset` function is used to reset the form to its initial state.
 
 ## Contributing
 

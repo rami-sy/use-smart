@@ -1,6 +1,6 @@
 {
   "name": "use-smart",
-  "version": "0.2.55",
+  "version": "0.2.59",
   "description": " A react hook to generate and manage your form in a smart way",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -18,6 +18,10 @@
   "author": {
     "name": "rami sweyri",
     "email": "rami.sweyri@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rami-sy/use-smart"
   },
   "license": "MIT",
   "devDependencies": {
