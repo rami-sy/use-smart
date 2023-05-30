@@ -1,5 +1,6 @@
 import React from "react";
 import { useSmartForm } from "./components/use-smart-form";
+import SmartForm from "./components/use-smart-form/SmartForm";
 const App = () => {
   const handleSubmit = (formData) => {
     // Handle form submission, such as sending data to a server
@@ -25,6 +26,16 @@ const App = () => {
   return (
     <div>
       <div>{form}</div>
+
+      <SmartForm
+        onSubmit={(state) => {
+          console.log({ state });
+        }}
+      >
+        <input name="firstName" />
+        <input name="lastName" />
+        <input name="email" />
+      </SmartForm>
     </div>
   );
 };

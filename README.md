@@ -47,6 +47,30 @@ const MyComponent = () => {
 };
 ```
 
+use `SmartForm` instead of `useSmartForm` hook if you want to use it as a component.
+
+```jsx
+import React from "react";
+import { SmartForm } from "use-smart";
+const MyComponent = () => {
+  return (
+    <SmartForm
+      onSubmit={(state) => {
+        console.log({ state });
+      }}
+    >
+      <input name="firstName" />
+      <input name="lastName" />
+      <input name="email" />
+    </SmartForm>
+  );
+};
+
+export default App;
+```
+
+in example above, you can use `onSubmit` prop to get form state. no need to use onChange or value props for inputs. use-smart will handle it for you.
+
 ## Features
 
 - Handles form state
