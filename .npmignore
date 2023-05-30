@@ -58,4 +58,6 @@ src/
 # ignore .storybook floder with all content insed
 .storybook/
 
+# ignore public floder with all content insed
+public/
 

@@ -75,6 +75,9 @@ const useSmartForm = (initialFormFormat, onSubmit) => {
       onSubmit(state);
     }
   };
+  const get = (key) => {
+    return state[key];
+  };
   const renderFormInputs = () => {
     return Object.entries(state).map(([fieldName, fieldValue]) => {
       if (typeof fieldValue === "object" && fieldValue !== null) {
@@ -173,6 +176,7 @@ const useSmartForm = (initialFormFormat, onSubmit) => {
       </form>
     ),
     state,
+    get,
   };
 };
 
