@@ -1,4 +1,21 @@
-import React from "react";
+/**
+ * useSmartForm Hook
+ *
+ * A custom hook for managing form state, validation, and submission.
+ *
+ * @param {object} initialFormFormat - The initial form structure.
+ * @param {function} onSubmit - The callback function to handle form submission.
+ * @param {object} [options] - Additional options for customizing form behavior.
+ * @param {boolean} [options.hideSubmitButton=false] - Whether to hide the submit button.
+ * @param {boolean} [options.disableValidation=false] - Whether to disable form field validation.
+ * @param {string} [options.customSubmitButtonText=""] - Custom text for the submit button.
+ * @param {boolean} [options.showErrorSummary=true] - Whether to display a summary of form errors.
+ * @param {boolean} [options.showFieldErrors=true] - Whether to display individual field errors inline with form inputs.
+ *
+ * @returns {object} - An object containing the form JSX, form state, errors, loading state, and a reset function.
+ */
+
+import React, { useState } from "react";
 import { useImmerReducer } from "use-immer";
 
 const useSmartForm = (
@@ -9,6 +26,7 @@ const useSmartForm = (
     disableValidation: false,
     customSubmitButtonText: "",
     showErrorSummary: true,
+    showFieldErrors: true,
   }
 ) => {
   const {
@@ -16,6 +34,7 @@ const useSmartForm = (
     disableValidation = false,
     customSubmitButtonText = "",
     showErrorSummary = true,
+    showFieldErrors = true,
   } = options;
 
   const initialState = Object.entries(initialFormFormat).reduce(
@@ -50,6 +69,7 @@ const useSmartForm = (
         throw new Error(`Invalid action type: ${action.type}`);
     }
   };
+  const [fieldTouched, setFieldTouched] = useState({}); // Track touched fields
 
   const [data, dispatch] = useImmerReducer(reducer, initialState);
 
@@ -86,6 +106,9 @@ const useSmartForm = (
 
       return !error;
     }
+    if (showFieldErrors || fieldTouched[key]) {
+      dispatch({ type: "updateError", key, payload: error });
+    }
 
     return true;
   };
@@ -94,12 +117,30 @@ const useSmartForm = (
     if (!disableValidation) {
       validateField(key, value);
     }
+
     dispatch({ type: "updateField", key, payload: value });
+  };
+  const handleFieldBlur = (key) => {
+    if (!showFieldErrors) {
+      setFieldTouched((prevFieldTouched) => ({
+        ...prevFieldTouched,
+        [key]: true,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: "updateLoading", payload: true });
+
+    const touchedFields = Object.keys(initialFormFormat).reduce(
+      (acc, fieldName) => {
+        acc[fieldName] = true;
+        return acc;
+      },
+      {}
+    );
+    setFieldTouched(touchedFields);
 
     // Perform form submission actions here, such as sending data to a server
     // Simulating an asynchronous submission with setTimeout
@@ -110,7 +151,7 @@ const useSmartForm = (
       if (onSubmit) {
         onSubmit(data.state);
       }
-    }, 1000);
+    }, 100);
   };
 
   const reset = () => {
@@ -147,9 +188,13 @@ const useSmartForm = (
                   type={type}
                   value={formattedValue}
                   placeholder={placeholder}
+                  onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                 />
+                {showFieldErrors && (
+                  <ErrorMessage fieldName={fieldName} /> // Show individual field error
+                )}
               </div>
             );
           case "checkbox":
@@ -160,8 +205,12 @@ const useSmartForm = (
                   id={fieldName}
                   type="checkbox"
                   checked={formattedValue}
+                  onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.checked)}
                 />
+                {showFieldErrors && (
+                  <ErrorMessage fieldName={fieldName} /> // Show individual field error
+                )}
               </div>
             );
           case "radio":
@@ -174,11 +223,15 @@ const useSmartForm = (
                       type="radio"
                       value={option}
                       checked={formattedValue === option}
+                      onBlur={() => handleFieldBlur(fieldName)}
                       onChange={(e) => handleChange(fieldName, e.target.value)}
                     />
                     {option}
                   </label>
                 ))}
+                {showFieldErrors && (
+                  <ErrorMessage fieldName={fieldName} /> // Show individual field error
+                )}
               </div>
             );
           case "select":
@@ -188,6 +241,7 @@ const useSmartForm = (
                 <select
                   id={fieldName}
                   value={formattedValue}
+                  onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                 >
                   {options.map((option) => (
@@ -196,6 +250,9 @@ const useSmartForm = (
                     </option>
                   ))}
                 </select>
+                {showFieldErrors && (
+                  <ErrorMessage fieldName={fieldName} /> // Show individual field error
+                )}
               </div>
             );
           default:
@@ -207,6 +264,7 @@ const useSmartForm = (
                   type="text"
                   value={formattedValue}
                   placeholder={placeholder}
+                  onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                 />

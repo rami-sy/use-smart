@@ -1,6 +1,6 @@
 {
   "name": "use-smart",
-  "version": "0.2.59",
+  "version": "0.2.61",
   "description": " A react hook to generate and manage your form in a smart way",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
