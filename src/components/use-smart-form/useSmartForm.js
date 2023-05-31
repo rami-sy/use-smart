@@ -48,7 +48,7 @@ const useSmartForm = (
       }
       return acc;
     },
-    { state: {}, errors: {}, isLoading: false }
+    { state: {}, errors: {}, isLoading: false, submissionError: null }
   );
 
   const reducer = (draft, action) => {
@@ -64,6 +64,9 @@ const useSmartForm = (
         break;
       case "resetErrors":
         draft.errors = { ...initialState.errors };
+        break;
+      case "updateSubmissionError":
+        draft.submissionError = action.payload;
         break;
       default:
         throw new Error(`Invalid action type: ${action.type}`);
@@ -118,7 +121,12 @@ const useSmartForm = (
       validateField(key, value);
     }
 
-    dispatch({ type: "updateField", key, payload: value });
+    // Handle file input separately
+    if (initialFormFormat[key].type === "file") {
+      dispatch({ type: "updateField", key, payload: value });
+    } else {
+      dispatch({ type: "updateField", key, payload: value });
+    }
   };
   const handleFieldBlur = (key) => {
     if (!showFieldErrors) {
@@ -141,17 +149,21 @@ const useSmartForm = (
       {}
     );
     setFieldTouched(touchedFields);
+    try {
+      // Perform form submission actions here, such as sending data to a server
+      // Simulating an asynchronous submission with setTimeout
+      // Replace this with your actual form submission logic
 
-    // Perform form submission actions here, such as sending data to a server
-    // Simulating an asynchronous submission with setTimeout
-    setTimeout(() => {
       dispatch({ type: "updateLoading", payload: false });
 
       // Call the onSubmit callback with the current form state
       if (onSubmit) {
         onSubmit(data.state);
       }
-    }, 100);
+    } catch (error) {
+      dispatch({ type: "updateLoading", payload: false });
+      dispatch({ type: "updateSubmissionError", payload: error.message });
+    }
   };
 
   const reset = () => {
@@ -255,6 +267,35 @@ const useSmartForm = (
                 )}
               </div>
             );
+          case "date":
+            return (
+              <div key={fieldName}>
+                <label htmlFor={fieldName}>{label}</label>
+                <input
+                  id={fieldName}
+                  type="date"
+                  value={formattedValue}
+                  onBlur={() => handleFieldBlur(fieldName)}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                />
+                {showFieldErrors && <ErrorMessage fieldName={fieldName} />}
+              </div>
+            );
+
+          case "file":
+            return (
+              <div key={fieldName}>
+                <label htmlFor={fieldName}>{label}</label>
+                <input
+                  id={fieldName}
+                  type="file"
+                  onChange={(e) => handleChange(fieldName, e.target.files)}
+                  className={className}
+                />
+                {showFieldErrors && <ErrorMessage fieldName={fieldName} />}
+              </div>
+            );
           default:
             return (
               <div key={fieldName}>
@@ -300,6 +341,7 @@ const useSmartForm = (
         {showErrorSummary &&
           Object.values(data.errors).some((error) => error !== "") && (
             <div style={{ color: "red" }}>
+              {data.submissionError && <div>{data.submissionError}</div>}
               {Object.keys(data.errors).map((fieldName) => (
                 <ErrorMessage key={fieldName} fieldName={fieldName} />
               ))}
