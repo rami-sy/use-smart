@@ -11,22 +11,26 @@ const App = () => {
     {
       country: {
         value: "",
-        options: ["USA", "Canada", "Mexico"],
+        format: (value) => value.toUpperCase(), // Custom formatting function to convert to uppercase
+      },
+      age: {
+        type: "number",
+        format: (value) => {
+          const prefix = "Age: ";
+          if (value.startsWith(prefix)) {
+            return value;
+          } else {
+            return `${prefix}${value}`;
+          }
+        }, // Custom formatting function to prepend 'Age: ' to the value
       },
       state: {
         value: "",
-        dependency: {
-          field: "country",
-          value: "USA",
-        },
+
         options: ["New York", "California", "Texas"],
       },
       city: {
         value: "",
-        dependency: {
-          field: "country",
-          value: "USA",
-        },
       },
     },
     handleSubmit,

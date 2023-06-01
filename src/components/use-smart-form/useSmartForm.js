@@ -42,13 +42,21 @@ const useSmartForm = (
       if (typeof fieldValue === "object" && fieldValue !== null) {
         acc.state[fieldName] = fieldValue.value;
         acc.errors[fieldName] = "";
+        acc.format[fieldName] = fieldValue.format || null;
       } else {
         acc.state[fieldName] = fieldValue;
         acc.errors[fieldName] = "";
+        acc.format[fieldName] = null;
       }
       return acc;
     },
-    { state: {}, errors: {}, isLoading: false, submissionError: null }
+    {
+      state: {},
+      errors: {},
+      isLoading: false,
+      submissionError: null,
+      format: {},
+    }
   );
 
   const reducer = (draft, action) => {
@@ -125,7 +133,12 @@ const useSmartForm = (
     if (initialFormFormat[key].type === "file") {
       dispatch({ type: "updateField", key, payload: value });
     } else {
-      dispatch({ type: "updateField", key, payload: value });
+      const formattedValue =
+        initialState.format[key] &&
+        typeof initialState.format[key] === "function"
+          ? initialState.format[key](value)
+          : value;
+      dispatch({ type: "updateField", key, payload: formattedValue });
     }
   };
   const handleFieldBlur = (key) => {
@@ -184,11 +197,7 @@ const useSmartForm = (
           placeholder = fieldName.toLocaleUpperCase(),
           className = "",
           label,
-          format, // Add the format property
         } = fieldValue;
-        const formattedValue = format
-          ? format(data.state[fieldName])
-          : data.state[fieldName]; // Apply formatting if a format function is provided
 
         switch (type) {
           case "text":
@@ -198,7 +207,7 @@ const useSmartForm = (
                 <input
                   id={fieldName}
                   type={type}
-                  value={formattedValue}
+                  value={data.state[fieldName]}
                   placeholder={placeholder}
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
@@ -216,7 +225,7 @@ const useSmartForm = (
                 <input
                   id={fieldName}
                   type="checkbox"
-                  checked={formattedValue}
+                  checked={data.state[fieldName]}
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.checked)}
                 />
@@ -234,7 +243,7 @@ const useSmartForm = (
                     <input
                       type="radio"
                       value={option}
-                      checked={formattedValue === option}
+                      checked={data.state[fieldName] === option}
                       onBlur={() => handleFieldBlur(fieldName)}
                       onChange={(e) => handleChange(fieldName, e.target.value)}
                     />
@@ -252,7 +261,7 @@ const useSmartForm = (
                 <label htmlFor={fieldName}>{label}</label>
                 <select
                   id={fieldName}
-                  value={formattedValue}
+                  value={data.state[fieldName]}
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                 >
@@ -274,7 +283,7 @@ const useSmartForm = (
                 <input
                   id={fieldName}
                   type="date"
-                  value={formattedValue}
+                  value={data.state[fieldName]}
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
@@ -303,7 +312,7 @@ const useSmartForm = (
                 <input
                   id={fieldName}
                   type="text"
-                  value={formattedValue}
+                  value={data.state[fieldName]}
                   placeholder={placeholder}
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
