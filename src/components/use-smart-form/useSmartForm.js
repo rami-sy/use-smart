@@ -78,10 +78,10 @@ const useSmartForm = (
 
   const validateField = (key, value) => {
     const fieldConfig = initialFormFormat[key];
+    let error = "";
 
     if (fieldConfig && fieldConfig.validation && !disableValidation) {
       const { validation, customValidation } = fieldConfig;
-      let error = "";
 
       if (customValidation && typeof customValidation === "function") {
         error = customValidation(value);
