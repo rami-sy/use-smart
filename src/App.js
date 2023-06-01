@@ -9,6 +9,13 @@ const App = () => {
 
   const { form, state } = useSmartForm(
     {
+      firstName: {
+        value: "",
+      },
+      lastName: {
+        value: "",
+        showWhen: (formState) => formState.firstName === "John",
+      },
       country: {
         value: "",
         format: (value) => value.toUpperCase(), // Custom formatting function to convert to uppercase

@@ -83,8 +83,11 @@ const useSmartForm = (
   const [fieldTouched, setFieldTouched] = useState({}); // Track touched fields
 
   const [data, dispatch] = useImmerReducer(reducer, initialState);
+  const FieldErrorMessage = ({ error }) => {
+    return error ? <div style={{ color: "red" }}>{error}</div> : null;
+  };
 
-  const validateField = (key, value) => {
+  const validateField = async (key, value) => {
     const fieldConfig = initialFormFormat[key];
     let error = "";
 
@@ -92,7 +95,20 @@ const useSmartForm = (
       const { validation, customValidation } = fieldConfig;
 
       if (customValidation && typeof customValidation === "function") {
-        error = customValidation(value);
+        try {
+          // Check if the custom validation function returns a promise
+          const validationPromise = customValidation(value);
+          if (validationPromise instanceof Promise) {
+            // If it's a promise, await its resolution
+            error = await validationPromise;
+          } else {
+            // If not a promise, use the returned value
+            error = validationPromise;
+          }
+        } catch (err) {
+          // Handle any errors thrown during validation
+          error = err.message;
+        }
       }
 
       if (!error) {
@@ -186,8 +202,17 @@ const useSmartForm = (
 
   const renderFormInputs = () => {
     return Object.entries(data.state).map(([fieldName, fieldValue]) => {
+      const fieldConfig = initialFormFormat[fieldName];
+
       if (fieldName === "errors" || fieldName === "isLoading") {
         return null; // Skip rendering errors and loading state
+      }
+      const error = data.errors[fieldName];
+      const shouldShowField =
+        !fieldConfig.showWhen || fieldConfig.showWhen(data.state);
+
+      if (!shouldShowField) {
+        return null;
       }
 
       if (typeof fieldValue === "object" && fieldValue !== null) {
@@ -198,6 +223,10 @@ const useSmartForm = (
           className = "",
           label,
         } = fieldValue;
+
+        if (!shouldShowField) {
+          return null;
+        }
 
         switch (type) {
           case "text":
@@ -213,9 +242,7 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                 />
-                {showFieldErrors && (
-                  <ErrorMessage fieldName={fieldName} /> // Show individual field error
-                )}
+                {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
           case "checkbox":
@@ -229,9 +256,7 @@ const useSmartForm = (
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.checked)}
                 />
-                {showFieldErrors && (
-                  <ErrorMessage fieldName={fieldName} /> // Show individual field error
-                )}
+                {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
           case "radio":
@@ -250,9 +275,7 @@ const useSmartForm = (
                     {option}
                   </label>
                 ))}
-                {showFieldErrors && (
-                  <ErrorMessage fieldName={fieldName} /> // Show individual field error
-                )}
+                {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
           case "select":
@@ -271,9 +294,7 @@ const useSmartForm = (
                     </option>
                   ))}
                 </select>
-                {showFieldErrors && (
-                  <ErrorMessage fieldName={fieldName} /> // Show individual field error
-                )}
+                {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
           case "date":
@@ -288,7 +309,7 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                 />
-                {showFieldErrors && <ErrorMessage fieldName={fieldName} />}
+                {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
 
@@ -302,7 +323,7 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.files)}
                   className={className}
                 />
-                {showFieldErrors && <ErrorMessage fieldName={fieldName} />}
+                {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
           default:
@@ -317,7 +338,8 @@ const useSmartForm = (
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
-                />
+                />{" "}
+                {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
         }
