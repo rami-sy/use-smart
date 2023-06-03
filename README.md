@@ -191,6 +191,230 @@ In this example, we've added options to customize the behavior of the form. The 
 
 The `reset` function is used to reset the form to its initial state.
 
+## Options
+
+The `useSmartForm` hook and `SmartForm` component accept an optional options object as the third argument. This object can be used to customize the behavior of the form. The available options are:
+
+`hideSubmitButton` (boolean, default: `false`): Whether to hide the submit button.
+`disableValidation` (boolean, default: `false`): Whether to disable form field validation.
+`customSubmitButtonText` (string, default: `""`): The text to display on the submit button.
+`showErrorSummary` (boolean, default: `true`): Whether to show a summary of form errors.
+
+```jsx
+const options = {
+  hideSubmitButton: false,
+  disableValidation: false,
+  customSubmitButtonText: "",
+  showErrorSummary: true,
+  showFieldErrors: true,
+};
+
+useSmartForm(initialFormFormat, handleSubmit, options);
+```
+
+## Examples
+
+```jsx
+import React from "react";
+import { useSmartForm } from "./components/use-smart-form";
+import SmartForm from "./components/use-smart-form/SmartForm";
+
+const App = () => {
+  const handleSubmit = (formData) => {
+    // Handle form submission, such as sending data to a server
+    console.log("Form submitted:", formData, "with errors:", errors);
+  };
+
+  const { form, state, errors } = useSmartForm(
+    {
+      firstName: {
+        value: "",
+        validation: {
+          required: true,
+          minLength: 2,
+          maxLength: 10,
+        },
+      },
+      lastName: {
+        value: "",
+        showWhen: (formState) => formState.firstName === "John",
+      },
+      country: {
+        value: "",
+        format: (value) => value.toUpperCase(), // Custom formatting function to convert to uppercase
+      },
+      age: {
+        type: "number",
+        format: (value) => {
+          const prefix = "Age: ";
+          if (value.startsWith(prefix)) {
+            return value;
+          } else {
+            return `${prefix}${value}`;
+          }
+        }, // Custom formatting function to prepend 'Age: ' to the value
+      },
+      state: {
+        value: "",
+        type: "select",
+        options: ["New York", "California", "Texas"],
+      },
+      email: {
+        value: "",
+        type: "email",
+        customValidation: (value) => {
+          if (!value.includes("@")) {
+            return "Please enter a valid email address";
+          }
+        },
+      },
+    },
+    handleSubmit,
+    {
+      hideSubmitButton: true,
+    }
+  );
+
+  console.log({ state, errors });
+
+  return (
+    <div>
+      <div>
+        {form}
+        <button onClick={() => handleSubmit(state)}>Submit </button>
+      </div>
+    </div>
+  );
+};
+
+export default App;
+```
+
+## API Reference
+
+### useSmartForm
+
+```jsx
+const { form, state, errors, isLoading, reset } = useSmartForm(
+  initialFormFormat,
+  handleSubmit,
+  options
+);
+```
+
+The `useSmartForm` hook accepts three arguments:
+
+`initialFormFormat` (object): The initial form format object.
+`handleSubmit` (function): The function to call when the form is submitted.
+`options` (object, optional): An object containing options to customize the behavior of the form.
+
+The `useSmartForm` hook returns an object with the following properties:
+
+`form` (JSX): The form JSX.
+`state` (object): The current form state.
+`errors` (object): The current form errors.
+`isLoading` (boolean): Whether the form is currently submitting.
+`reset` (function): A function to reset the form to its initial state.
+
+### SmartForm
+
+```jsx
+<SmartForm
+  initialFormFormat={initialFormFormat}
+  handleSubmit={handleSubmit}
+  options={options}
+/>
+```
+
+The `SmartForm` component accepts three props:
+
+`initialFormFormat` (object): The initial form format object.
+`handleSubmit` (function): The function to call when the form is submitted.
+`options` (object, optional): An object containing options to customize the behavior of the form.
+
+## Form Format
+
+The form format object is used to define the form fields. It is an object with the following structure:
+
+```jsx
+const initialFormFormat = {
+  firstName: {
+    value: "",
+    validation: {
+      required: true,
+      minLength: 2,
+      maxLength: 10,
+    },
+  },
+  lastName: {
+    value: "",
+    showWhen: (formState) => formState.firstName === "John",
+  },
+  country: {
+    value: "",
+    format: (value) => value.toUpperCase(), // Custom formatting function to convert to uppercase
+  },
+  age: {
+    type: "number",
+    format: (value) => {
+      const prefix = "Age: ";
+      if (value.startsWith(prefix)) {
+        return value;
+      } else {
+        return `${prefix}${value}`;
+      }
+    }, // Custom formatting function to prepend 'Age: ' to the value
+  },
+  state: {
+    value: "",
+    type: "select",
+    options: ["New York", "California", "Texas"],
+  },
+  email: {
+    value: "",
+    type: "email",
+    customValidation: (value) => {
+      if (!value.includes("@")) {
+        return "Please enter a valid email address";
+      }
+    },
+  },
+};
+```
+
+Each key in the form format object represents a form field. The value of each key is an object with the following properties:
+
+`value` (string): The initial value of the form field.
+`validation` (object, optional): An object containing validation rules for the form field.
+`showWhen` (function, optional): A function that determines whether to show the form field.
+`format` (function, optional): A function that formats the value of the form field.
+`type` (string, optional): The type of the form field. Can be one of: `text`, `number`, `email`, `password`, `select`, `checkbox`, `radio`, `textarea`.
+`options` (array, optional): An array of options for the form field.
+`customValidation` (function, optional): A function that performs custom validation on the form field.
+
+## Validation
+
+The `validation` property of a form field is an object with the following structure:
+
+```jsx
+const validation = {
+  required: true,
+  minLength: 2,
+  maxLength: 10,
+};
+```
+
+Each key in the validation object represents a validation rule. The value of each key is a boolean that determines whether the validation rule should be applied.
+
+The following validation rules are supported:
+
+`required` (boolean): Whether the form field is required.
+`minLength` (number): The minimum length of the form field.
+`maxLength` (number): The maximum length of the form field.
+`pattern` (string): A regular expression that the form field must match.
+`min` (number): The minimum value of the form field.
+`max` (number): The maximum value of the form field.
+
 ## Contributing
 
 Contributions to useSmartForm are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
@@ -198,3 +422,7 @@ Contributions to useSmartForm are welcome! If you find any issues or have sugges
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
+
+```
+
+```

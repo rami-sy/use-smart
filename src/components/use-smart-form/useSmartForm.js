@@ -15,7 +15,7 @@
  * @returns {object} - An object containing the form JSX, form state, errors, loading state, and a reset function.
  */
 
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useImmerReducer } from "use-immer";
 
 const useSmartForm = (
@@ -37,26 +37,30 @@ const useSmartForm = (
     showFieldErrors = true,
   } = options;
 
-  const initialState = Object.entries(initialFormFormat).reduce(
-    (acc, [fieldName, fieldValue]) => {
-      if (typeof fieldValue === "object" && fieldValue !== null) {
-        acc.state[fieldName] = fieldValue.value;
-        acc.errors[fieldName] = "";
-        acc.format[fieldName] = fieldValue.format || null;
-      } else {
-        acc.state[fieldName] = fieldValue;
-        acc.errors[fieldName] = "";
-        acc.format[fieldName] = null;
-      }
-      return acc;
-    },
-    {
-      state: {},
-      errors: {},
-      isLoading: false,
-      submissionError: null,
-      format: {},
-    }
+  const initialState = useMemo(
+    () =>
+      Object.entries(initialFormFormat).reduce(
+        (acc, [fieldName, fieldValue]) => {
+          if (typeof fieldValue === "object" && fieldValue !== null) {
+            acc.state[fieldName] = fieldValue.value;
+            acc.errors[fieldName] = "";
+            acc.format[fieldName] = fieldValue.format || null;
+          } else {
+            acc.state[fieldName] = fieldValue;
+            acc.errors[fieldName] = "";
+            acc.format[fieldName] = null;
+          }
+          return acc;
+        },
+        {
+          state: {},
+          errors: {},
+          isLoading: false,
+          submissionError: null,
+          format: {},
+        }
+      ),
+    [initialFormFormat]
   );
 
   const reducer = (draft, action) => {
@@ -140,7 +144,7 @@ const useSmartForm = (
     return true;
   };
 
-  const handleChange = (key, value) => {
+  const handleChange = useCallback((key, value) => {
     if (!disableValidation) {
       validateField(key, value);
     }
@@ -156,15 +160,16 @@ const useSmartForm = (
           : value;
       dispatch({ type: "updateField", key, payload: formattedValue });
     }
-  };
-  const handleFieldBlur = (key) => {
+  }, []);
+
+  const handleFieldBlur = useCallback((key) => {
     if (!showFieldErrors) {
       setFieldTouched((prevFieldTouched) => ({
         ...prevFieldTouched,
         [key]: true,
       }));
     }
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -200,7 +205,7 @@ const useSmartForm = (
     dispatch({ type: "resetErrors" });
   };
 
-  const renderFormInputs = () => {
+  const renderFormInputs = useMemo(() => {
     return Object.entries(data.state).map(([fieldName, fieldValue]) => {
       const fieldConfig = initialFormFormat[fieldName];
 
@@ -358,7 +363,7 @@ const useSmartForm = (
         );
       }
     });
-  };
+  }, [data.state, data.errors, initialFormFormat, showFieldErrors]);
 
   const ErrorMessage = ({ fieldName }) => {
     const error = data.errors[fieldName];
@@ -368,7 +373,7 @@ const useSmartForm = (
   return {
     form: (
       <form onSubmit={handleSubmit}>
-        {renderFormInputs()}
+        {renderFormInputs}
         {showErrorSummary &&
           Object.values(data.errors).some((error) => error !== "") && (
             <div style={{ color: "red" }}>
