@@ -1,7 +1,7 @@
 import React from "react";
 import useSmartForm from "./useSmartForm";
 
-const SmartForm = ({ children, onSubmit }) => {
+const SmartForm = ({ children, onSubmit, options }) => {
   // Convert the children to initialFormFormat
   const initialFormFormat = React.Children.toArray(children).reduce(
     (acc, child) => {
@@ -13,7 +13,7 @@ const SmartForm = ({ children, onSubmit }) => {
     {}
   );
 
-  const { form, state } = useSmartForm(initialFormFormat, onSubmit);
+  const { form, state } = useSmartForm(initialFormFormat, onSubmit, options);
 
   return <div>{form}</div>;
 };

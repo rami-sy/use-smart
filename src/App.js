@@ -2,6 +2,36 @@ import React from "react";
 import { useSmartForm } from "./components/use-smart-form";
 import SmartForm from "./components/use-smart-form/SmartForm";
 
+// Define the roles and permissions
+const roles = {
+  ADMIN: ["read", "write", "delete"],
+  USER: ["read"],
+};
+
+// Custom hook for checking if the user has the required role and permission
+function useAccessControl(role, permission) {
+  const userRole = "ADMIN"; // Replace this with actual logic to get the user's role
+
+  // Check if the user has the required role and permission
+  const hasAccess = React.useMemo(() => {
+    return (
+      role &&
+      permission &&
+      roles[userRole] &&
+      roles[userRole].includes(permission)
+    );
+  }, [role, permission, userRole]);
+
+  return hasAccess;
+}
+
+// Custom component to conditionally render based on access control
+function AclDiv({ roles, className, children }) {
+  const hasAccess = roles.some((role) => useAccessControl(role, "read"));
+
+  return hasAccess ? <div className={className}>{children}</div> : null;
+}
+
 const App = () => {
   const handleSubmit = (formData) => {
     // Handle form submission, such as sending data to a server
@@ -66,6 +96,10 @@ const App = () => {
         {form}
         <button onClick={() => handleSubmit(state)}>Submit </button>
       </div>
+      <hr />
+      <AclDiv roles={["ss"]} className="my-div">
+        This is a protected div for admins only.
+      </AclDiv>
     </div>
   );
 };

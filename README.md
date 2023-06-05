@@ -101,6 +101,9 @@ const initialFormFormat = {
   email: {
     type: "email",
     placeholder: "Your email",
+    className: "p-3 mx-2",
+    containerClassName: "flex flex-col",
+    labelClassName: "text-gray-700",
   },
   gender: {
     type: "checkbox",
@@ -112,6 +115,16 @@ const initialFormFormat = {
     placeholder: "Your password",
     validation: {
       minLength: 8,
+    },
+    constainerStyle: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    labelStyle: {
+      color: "red",
+    },
+    style: {
+      border: "1px solid red",
     },
   },
   city: {

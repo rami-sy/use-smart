@@ -27,6 +27,7 @@ const useSmartForm = (
     customSubmitButtonText: "",
     showErrorSummary: true,
     showFieldErrors: true,
+    className: "",
   }
 ) => {
   const {
@@ -35,6 +36,7 @@ const useSmartForm = (
     customSubmitButtonText = "",
     showErrorSummary = true,
     showFieldErrors = true,
+    className = "",
   } = options;
 
   const initialState = useMemo(
@@ -226,6 +228,11 @@ const useSmartForm = (
           options,
           placeholder = fieldName.toLocaleUpperCase(),
           className = "",
+          style = {},
+          containerClassName = "",
+          containerStyle = {},
+          labelClassName = "",
+          labelStyle = {},
           label,
         } = fieldValue;
 
@@ -236,8 +243,18 @@ const useSmartForm = (
         switch (type) {
           case "text":
             return (
-              <div key={fieldName}>
-                <label htmlFor={fieldName}>{label}</label>
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
                 <input
                   id={fieldName}
                   type={type}
@@ -246,28 +263,51 @@ const useSmartForm = (
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
+                  style={style}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
           case "checkbox":
             return (
-              <div key={fieldName} className={className}>
-                <label htmlFor={fieldName}>{label}</label>
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
                 <input
                   id={fieldName}
                   type="checkbox"
                   checked={data.state[fieldName]}
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.checked)}
+                  className={className}
+                  style={style}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
           case "radio":
             return (
-              <div key={fieldName} className={className}>
-                <label>{label}</label>
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
                 {options.map((option) => (
                   <label key={option}>
                     <input
@@ -276,6 +316,8 @@ const useSmartForm = (
                       checked={data.state[fieldName] === option}
                       onBlur={() => handleFieldBlur(fieldName)}
                       onChange={(e) => handleChange(fieldName, e.target.value)}
+                      className={className}
+                      style={style}
                     />
                     {option}
                   </label>
@@ -285,13 +327,25 @@ const useSmartForm = (
             );
           case "select":
             return (
-              <div key={fieldName} className={className}>
-                <label htmlFor={fieldName}>{label}</label>
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
                 <select
                   id={fieldName}
                   value={data.state[fieldName]}
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                  style={style}
                 >
                   {options.map((option) => (
                     <option key={option} value={option}>
@@ -304,8 +358,18 @@ const useSmartForm = (
             );
           case "date":
             return (
-              <div key={fieldName}>
-                <label htmlFor={fieldName}>{label}</label>
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
                 <input
                   id={fieldName}
                   type="date"
@@ -313,6 +377,7 @@ const useSmartForm = (
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
+                  style={style}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -320,21 +385,42 @@ const useSmartForm = (
 
           case "file":
             return (
-              <div key={fieldName}>
-                <label htmlFor={fieldName}>{label}</label>
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
                 <input
                   id={fieldName}
                   type="file"
                   onChange={(e) => handleChange(fieldName, e.target.files)}
                   className={className}
+                  style={style}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
           default:
             return (
-              <div key={fieldName}>
-                <label htmlFor={fieldName}>{label}</label>
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
                 <input
                   id={fieldName}
                   type="text"
@@ -343,7 +429,8 @@ const useSmartForm = (
                   onBlur={() => handleFieldBlur(fieldName)}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
-                />{" "}
+                  style={style}
+                />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
