@@ -392,6 +392,88 @@ const useSmartForm = (
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
+          case "textarea": // Add support for textarea field
+            return (
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
+                <textarea
+                  id={fieldName}
+                  value={data.state[fieldName]}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  onBlur={() => handleFieldBlur(fieldName)}
+                  className={className}
+                  style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
+                />
+              </div>
+            );
+          case "number": // Add support for number input field
+            return (
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
+                <input
+                  id={fieldName}
+                  type="number"
+                  value={data.state[fieldName]}
+                  placeholder={placeholder}
+                  onBlur={() => handleFieldBlur(fieldName)}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                  style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
+                />
+              </div>
+            );
+          case "password": // Add support for password input field
+            return (
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
+                <input
+                  id={fieldName}
+                  type="password"
+                  value={data.state[fieldName]}
+                  placeholder={placeholder}
+                  onBlur={() => handleFieldBlur(fieldName)}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                  style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
+                />
+              </div>
+            );
 
           case "file":
             return (
