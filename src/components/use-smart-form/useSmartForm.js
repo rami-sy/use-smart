@@ -98,24 +98,7 @@ const useSmartForm = (
     let error = "";
 
     if (fieldConfig && fieldConfig.validation && !disableValidation) {
-      const { validation, customValidation } = fieldConfig;
-
-      if (customValidation && typeof customValidation === "function") {
-        try {
-          // Check if the custom validation function returns a promise
-          const validationPromise = customValidation(value);
-          if (validationPromise instanceof Promise) {
-            // If it's a promise, await its resolution
-            error = await validationPromise;
-          } else {
-            // If not a promise, use the returned value
-            error = validationPromise;
-          }
-        } catch (err) {
-          // Handle any errors thrown during validation
-          error = err.message;
-        }
-      }
+      const { validation } = fieldConfig;
 
       if (!error) {
         if (validation.minLength && value.length < validation.minLength) {
@@ -139,6 +122,29 @@ const useSmartForm = (
 
       return !error;
     }
+    if (
+      fieldConfig &&
+      typeof fieldConfig.customValidation === "function" &&
+      !disableValidation
+    ) {
+      const { customValidation } = fieldConfig;
+
+      try {
+        // Check if the custom validation function returns a promise
+        const validationPromise = customValidation(value);
+        if (validationPromise instanceof Promise) {
+          // If it's a promise, await its resolution
+          error = await validationPromise;
+        } else {
+          // If not a promise, use the returned value
+          error = validationPromise;
+        }
+      } catch (err) {
+        // Handle any errors thrown during validation
+        error = err.message;
+      }
+    }
+
     if (showFieldErrors || fieldTouched[key]) {
       dispatch({ type: "updateError", key, payload: error });
     }
@@ -208,7 +214,7 @@ const useSmartForm = (
   };
 
   const renderFormInputs = useMemo(() => {
-    return Object.entries(data.state).map(([fieldName, fieldValue]) => {
+    return Object.entries(initialFormFormat).map(([fieldName, fieldValue]) => {
       const fieldConfig = initialFormFormat[fieldName];
 
       if (fieldName === "errors" || fieldName === "isLoading") {
@@ -221,7 +227,7 @@ const useSmartForm = (
       if (!shouldShowField) {
         return null;
       }
-
+      console.log({ fieldName, fieldValue });
       if (typeof fieldValue === "object" && fieldValue !== null) {
         const {
           type,
@@ -235,13 +241,43 @@ const useSmartForm = (
           labelStyle = {},
           label,
         } = fieldValue;
-
+        console.log({ type });
         if (!shouldShowField) {
           return null;
         }
 
         switch (type) {
           case "text":
+            return (
+              <div
+                key={fieldName}
+                className={`${containerClassName}`}
+                style={containerStyle}
+              >
+                <label
+                  className={`${labelClassName}`}
+                  style={labelStyle}
+                  htmlFor={fieldName}
+                >
+                  {label}
+                </label>
+                <input
+                  id={fieldName}
+                  type={type}
+                  value={data.state[fieldName]}
+                  placeholder={placeholder}
+                  onBlur={() => handleFieldBlur(fieldName)}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                  style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
+                />
+                {showFieldErrors && <FieldErrorMessage error={error} />}
+              </div>
+            );
+
+          case "email":
             return (
               <div
                 key={fieldName}

@@ -40,12 +40,32 @@ const App = () => {
 
   const { form, state, errors } = useSmartForm(
     {
+      email: {
+        value: "",
+        type: "email",
+        validation: {
+          required: true,
+          minLength: 2,
+          maxLength: 10,
+        },
+        customValidation: (value) => {
+          console.log({ value });
+          if (!value.includes("@")) {
+            return "Please enter a valid email address";
+          }
+        },
+      },
       firstName: {
         value: "",
         validation: {
           required: true,
           minLength: 2,
           maxLength: 10,
+        },
+        customValidation: (value) => {
+          if (value === "John") {
+            return "John is not allowed";
+          }
         },
       },
       lastName: {
@@ -72,15 +92,6 @@ const App = () => {
         type: "select",
         options: ["New York", "California", "Texas"],
       },
-      email: {
-        value: "",
-        type: "email",
-        customValidation: (value) => {
-          if (!value.includes("@")) {
-            return "Please enter a valid email address";
-          }
-        },
-      },
     },
     handleSubmit,
     {
@@ -97,9 +108,9 @@ const App = () => {
         <button onClick={() => handleSubmit(state)}>Submit </button>
       </div>
       <hr />
-      <AclDiv roles={["ss"]} className="my-div">
+      {/* <AclDiv roles={["ss"]} className="my-div">
         This is a protected div for admins only.
-      </AclDiv>
+      </AclDiv> */}
     </div>
   );
 };
