@@ -264,6 +264,8 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                   style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -290,6 +292,8 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.checked)}
                   className={className}
                   style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -318,6 +322,8 @@ const useSmartForm = (
                       onChange={(e) => handleChange(fieldName, e.target.value)}
                       className={className}
                       style={style}
+                      aria-invalid={!!error}
+                      aria-describedby={error ? "name-error" : ""}
                     />
                     {option}
                   </label>
@@ -346,6 +352,8 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                   style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
                 >
                   {options.map((option) => (
                     <option key={option} value={option}>
@@ -378,6 +386,8 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                   style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -403,6 +413,8 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.files)}
                   className={className}
                   style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -430,6 +442,8 @@ const useSmartForm = (
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                   style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? "name-error" : ""}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -445,6 +459,8 @@ const useSmartForm = (
               placeholder={fieldName.toLocaleUpperCase()}
               value={data.state[fieldName]}
               onChange={(e) => handleChange(fieldName, e.target.value)}
+              aria-invalid={!!error}
+              aria-describedby={error ? "name-error" : ""}
             />
           </div>
         );
