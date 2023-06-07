@@ -105,6 +105,16 @@ const useSmartForm = (
           error = `Field must be at least ${validation.minLength} characters long.`;
         }
 
+        // add required validation
+        if (validation.required && !value) {
+          error = "Field is required.";
+        }
+
+        // add email validation
+        if (validation.email && !value.includes("@")) {
+          error = "Field must be a valid email address.";
+        }
+
         if (validation.maxLength && value.length > validation.maxLength) {
           error = `Field must not exceed ${validation.maxLength} characters.`;
         }
@@ -115,6 +125,10 @@ const useSmartForm = (
 
         if (validation.max && parseFloat(value) > validation.max) {
           error = `Value must be less than or equal to ${validation.max}.`;
+        }
+
+        if (validation.pattern && !validation.pattern.test(value)) {
+          error = validation.patternError || "Invalid value.";
         }
       }
 
@@ -132,6 +146,7 @@ const useSmartForm = (
       try {
         // Check if the custom validation function returns a promise
         const validationPromise = customValidation(value);
+
         if (validationPromise instanceof Promise) {
           // If it's a promise, await its resolution
           error = await validationPromise;
@@ -227,7 +242,6 @@ const useSmartForm = (
       if (!shouldShowField) {
         return null;
       }
-      console.log({ fieldName, fieldValue });
       if (typeof fieldValue === "object" && fieldValue !== null) {
         const {
           type,
@@ -241,7 +255,6 @@ const useSmartForm = (
           labelStyle = {},
           label,
         } = fieldValue;
-        console.log({ type });
         if (!shouldShowField) {
           return null;
         }

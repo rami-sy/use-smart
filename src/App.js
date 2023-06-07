@@ -43,11 +43,6 @@ const App = () => {
       email: {
         value: "",
         type: "email",
-        validation: {
-          required: true,
-          minLength: 2,
-          maxLength: 10,
-        },
         customValidation: (value) => {
           console.log({ value });
           if (!value.includes("@")) {
@@ -62,11 +57,6 @@ const App = () => {
           minLength: 2,
           maxLength: 10,
         },
-        customValidation: (value) => {
-          if (value === "John") {
-            return "John is not allowed";
-          }
-        },
       },
       lastName: {
         value: "",
@@ -77,7 +67,7 @@ const App = () => {
         format: (value) => value.toUpperCase(), // Custom formatting function to convert to uppercase
       },
       age: {
-        type: "number",
+        type: "text",
         format: (value) => {
           const prefix = "Age: ";
           if (value.startsWith(prefix)) {
