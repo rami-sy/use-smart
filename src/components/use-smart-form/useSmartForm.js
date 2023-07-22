@@ -635,7 +635,12 @@ const useSmartForm = (
             </div>
           )}
         {!hideSubmitButton && (
-          <button type="submit" disabled={data.isLoading}>
+          <button
+            type="submit"
+            disabled={data.isLoading}
+            aria-label={customSubmitButtonText || "Submit"}
+            aria-disabled={data.isLoading ? "true" : "false"}
+          >
             {data.isLoading ? "Loading..." : customSubmitButtonText || "Submit"}
           </button>
         )}
