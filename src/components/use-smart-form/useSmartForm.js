@@ -565,6 +565,81 @@ const useSmartForm = (
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
             );
+          case "phone":
+            return (
+              <div key={fieldName}>
+                <label htmlFor={fieldName}>
+                  {label}{" "}
+                  {fieldValue.required && <span aria-hidden="true">*</span>}
+                </label>
+                <input
+                  id={fieldName}
+                  type="tel"
+                  value={data.state[fieldName]}
+                  placeholder={placeholder}
+                  onBlur={() => handleFieldBlur(fieldName)}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                  style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? `${fieldName}-error` : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
+                />
+                {showFieldErrors && (
+                  <FieldErrorMessage id={`${fieldName}-error`} error={error} />
+                )}
+              </div>
+            );
+
+          case "address":
+            return (
+              <div key={fieldName}>
+                <label htmlFor={fieldName}>
+                  {label}{" "}
+                  {fieldValue.required && <span aria-hidden="true">*</span>}
+                </label>
+                <textarea
+                  id={fieldName}
+                  value={data.state[fieldName]}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  onBlur={() => handleFieldBlur(fieldName)}
+                  className={className}
+                  style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? `${fieldName}-error` : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
+                />
+                {showFieldErrors && (
+                  <FieldErrorMessage id={`${fieldName}-error`} error={error} />
+                )}
+              </div>
+            );
+
+          case "time":
+            return (
+              <div key={fieldName}>
+                <label htmlFor={fieldName}>
+                  {label}{" "}
+                  {fieldValue.required && <span aria-hidden="true">*</span>}
+                </label>
+                <input
+                  id={fieldName}
+                  type="time"
+                  value={data.state[fieldName]}
+                  onBlur={() => handleFieldBlur(fieldName)}
+                  onChange={(e) => handleChange(fieldName, e.target.value)}
+                  className={className}
+                  style={style}
+                  aria-invalid={!!error}
+                  aria-describedby={error ? `${fieldName}-error` : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
+                />
+                {showFieldErrors && (
+                  <FieldErrorMessage id={`${fieldName}-error`} error={error} />
+                )}
+              </div>
+            );
+
           default:
             return (
               <div
