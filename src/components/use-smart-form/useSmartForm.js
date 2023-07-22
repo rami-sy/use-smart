@@ -19,6 +19,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useImmerReducer } from "use-immer";
 import InputContainer from "./input-container";
 import FieldErrorMessage from "./field-error-message";
+import Input from "./input";
 
 const useSmartForm = (
   initialFormFormat,
@@ -264,9 +265,9 @@ const useSmartForm = (
         }
 
         switch (type) {
-          case "text":
+          case "text" || "email" || "password" || "number" || "date":
             return (
-              <InputContainer
+              <Input
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -275,50 +276,17 @@ const useSmartForm = (
                 label={label}
                 showFieldErrors={showFieldErrors}
                 error={error}
-              >
-                <input
-                  id={fieldName}
-                  type={type}
-                  value={data.state[fieldName]}
-                  placeholder={placeholder}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
+                data={data}
+                type={type}
+                placeholder={placeholder}
+                handleFieldBlur={handleFieldBlur}
+                handleChange={handleChange}
+                className={className}
+                style={style}
+                fieldValue={fieldValue}
+              />
             );
 
-          case "email":
-            return (
-              <InputContainer
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-              >
-                <input
-                  id={fieldName}
-                  type={type}
-                  value={data.state[fieldName]}
-                  placeholder={placeholder}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
-            );
           case "checkbox":
             return (
               <InputContainer
@@ -407,32 +375,7 @@ const useSmartForm = (
                 </select>
               </InputContainer>
             );
-          case "date":
-            return (
-              <InputContainer
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-              >
-                <input
-                  id={fieldName}
-                  type="date"
-                  value={data.state[fieldName]}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
-            );
+
           case "textarea": // Add support for textarea field
             return (
               <InputContainer
@@ -450,60 +393,6 @@ const useSmartForm = (
                   value={data.state[fieldName]}
                   onChange={(e) => handleChange(fieldName, e.target.value)}
                   onBlur={() => handleFieldBlur(fieldName)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
-            );
-          case "number": // Add support for number input field
-            return (
-              <InputContainer
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-              >
-                <input
-                  id={fieldName}
-                  type="number"
-                  value={data.state[fieldName]}
-                  placeholder={placeholder}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
-            );
-          case "password": // Add support for password input field
-            return (
-              <InputContainer
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-              >
-                <input
-                  id={fieldName}
-                  type="password"
-                  value={data.state[fieldName]}
-                  placeholder={placeholder}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
                   className={className}
                   style={style}
                   aria-invalid={!!error}
