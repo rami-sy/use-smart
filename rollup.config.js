@@ -6,7 +6,10 @@ export default [
   {
     input: "./src/use-smart.js",
     output: [
-      { file: "./dist/index.js", format: "cjs" },
+      {
+        file: "./dist/index.js",
+        format: "cjs",
+      },
       {
         file: "./dist/index.es.js",
         format: "es",

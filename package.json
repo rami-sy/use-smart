@@ -1,7 +1,7 @@
 {
   "name": "use-smart",
-  "version": "0.2.82",
-  "description": " A react hook to generate and manage your form in a smart way",
+  "version": "0.2.92",
+  "description": " A react hook to generate and manage your form in a smart way!",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "files": [
@@ -38,12 +38,12 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
     "rollup": "^2.79.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-terser": "^7.0.2",
     "storybook": "^7.0.18",
-    "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "peerDependencies": {

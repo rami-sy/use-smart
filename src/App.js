@@ -1,7 +1,9 @@
 import React from "react";
-import { useSmartForm } from "./components/use-smart-form";
+// import { useSmartForm } from "./components/use-smart-form";
 import SmartForm from "./components/use-smart-form/SmartForm";
-
+import { useSmartForm } from "use-smart";
+// import { useSmartForm } from "use-smart";
+// useSmartForm
 // Define the roles and permissions
 const roles = {
   ADMIN: ["read", "write", "delete"],
@@ -43,6 +45,9 @@ const App = () => {
       email: {
         value: "",
         type: "email",
+        validation: {
+          regex: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+        },
         customValidation: (value) => {
           console.log({ value });
           if (!value.includes("@")) {

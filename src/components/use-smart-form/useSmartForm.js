@@ -110,6 +110,11 @@ const useSmartForm = (
           error = "Field is required.";
         }
 
+        // add rgx validation
+        if (validation.regex && !validation.regex.test(value)) {
+          error = validation.rgxError || "Invalid value.";
+        }
+
         // add email validation
         if (validation.email && !value.includes("@")) {
           error = "Field must be a valid email address.";
@@ -285,6 +290,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -315,6 +321,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -343,6 +350,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -373,6 +381,7 @@ const useSmartForm = (
                       style={style}
                       aria-invalid={!!error}
                       aria-describedby={error ? "name-error" : ""}
+                      aria-required={fieldValue.required ? "true" : "false"}
                     />
                     {option}
                   </label>
@@ -403,6 +412,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 >
                   {options.map((option) => (
                     <option key={option} value={option}>
@@ -437,6 +447,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -464,6 +475,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
               </div>
             );
@@ -492,6 +504,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
               </div>
             );
@@ -520,6 +533,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
               </div>
             );
@@ -546,6 +560,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -575,6 +590,7 @@ const useSmartForm = (
                   style={style}
                   aria-invalid={!!error}
                   aria-describedby={error ? "name-error" : ""}
+                  aria-required={fieldValue.required ? "true" : "false"}
                 />
                 {showFieldErrors && <FieldErrorMessage error={error} />}
               </div>
@@ -592,6 +608,7 @@ const useSmartForm = (
               onChange={(e) => handleChange(fieldName, e.target.value)}
               aria-invalid={!!error}
               aria-describedby={error ? "name-error" : ""}
+              aria-required={fieldValue.required ? "true" : "false"}
             />
           </div>
         );
