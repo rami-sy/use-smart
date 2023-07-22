@@ -17,6 +17,8 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { useImmerReducer } from "use-immer";
+import InputContainer from "./input-container";
+import FieldErrorMessage from "./field-error-message";
 
 const useSmartForm = (
   initialFormFormat,
@@ -89,9 +91,6 @@ const useSmartForm = (
   const [fieldTouched, setFieldTouched] = useState({}); // Track touched fields
 
   const [data, dispatch] = useImmerReducer(reducer, initialState);
-  const FieldErrorMessage = ({ error }) => {
-    return error ? <div style={{ color: "red" }}>{error}</div> : null;
-  };
 
   const validateField = async (key, value) => {
     const fieldConfig = initialFormFormat[key];
@@ -267,18 +266,16 @@ const useSmartForm = (
         switch (type) {
           case "text":
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <input
                   id={fieldName}
                   type={type}
@@ -292,24 +289,21 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && <FieldErrorMessage error={error} />}
-              </div>
+              </InputContainer>
             );
 
           case "email":
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <input
                   id={fieldName}
                   type={type}
@@ -323,23 +317,20 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && <FieldErrorMessage error={error} />}
-              </div>
+              </InputContainer>
             );
           case "checkbox":
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <input
                   id={fieldName}
                   type="checkbox"
@@ -352,23 +343,20 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && <FieldErrorMessage error={error} />}
-              </div>
+              </InputContainer>
             );
           case "radio":
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 {options.map((option) => (
                   <label key={option}>
                     <input
@@ -386,23 +374,20 @@ const useSmartForm = (
                     {option}
                   </label>
                 ))}
-                {showFieldErrors && <FieldErrorMessage error={error} />}
-              </div>
+              </InputContainer>
             );
           case "select":
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <select
                   id={fieldName}
                   value={data.state[fieldName]}
@@ -420,23 +405,20 @@ const useSmartForm = (
                     </option>
                   ))}
                 </select>
-                {showFieldErrors && <FieldErrorMessage error={error} />}
-              </div>
+              </InputContainer>
             );
           case "date":
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <input
                   id={fieldName}
                   type="date"
@@ -449,23 +431,20 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && <FieldErrorMessage error={error} />}
-              </div>
+              </InputContainer>
             );
           case "textarea": // Add support for textarea field
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <textarea
                   id={fieldName}
                   value={data.state[fieldName]}
@@ -477,22 +456,20 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-              </div>
+              </InputContainer>
             );
           case "number": // Add support for number input field
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <input
                   id={fieldName}
                   type="number"
@@ -506,22 +483,20 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-              </div>
+              </InputContainer>
             );
           case "password": // Add support for password input field
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <input
                   id={fieldName}
                   type="password"
@@ -535,23 +510,21 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-              </div>
+              </InputContainer>
             );
 
           case "file":
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <input
                   id={fieldName}
                   type="file"
@@ -562,16 +535,20 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && <FieldErrorMessage error={error} />}
-              </div>
+              </InputContainer>
             );
           case "phone":
             return (
-              <div key={fieldName}>
-                <label htmlFor={fieldName}>
-                  {label}{" "}
-                  {fieldValue.required && <span aria-hidden="true">*</span>}
-                </label>
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
+              >
                 <input
                   id={fieldName}
                   type="tel"
@@ -585,19 +562,21 @@ const useSmartForm = (
                   aria-describedby={error ? `${fieldName}-error` : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && (
-                  <FieldErrorMessage id={`${fieldName}-error`} error={error} />
-                )}
-              </div>
+              </InputContainer>
             );
 
           case "address":
             return (
-              <div key={fieldName}>
-                <label htmlFor={fieldName}>
-                  {label}{" "}
-                  {fieldValue.required && <span aria-hidden="true">*</span>}
-                </label>
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
+              >
                 <textarea
                   id={fieldName}
                   value={data.state[fieldName]}
@@ -609,19 +588,21 @@ const useSmartForm = (
                   aria-describedby={error ? `${fieldName}-error` : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && (
-                  <FieldErrorMessage id={`${fieldName}-error`} error={error} />
-                )}
-              </div>
+              </InputContainer>
             );
 
           case "time":
             return (
-              <div key={fieldName}>
-                <label htmlFor={fieldName}>
-                  {label}{" "}
-                  {fieldValue.required && <span aria-hidden="true">*</span>}
-                </label>
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
+              >
                 <input
                   id={fieldName}
                   type="time"
@@ -634,26 +615,21 @@ const useSmartForm = (
                   aria-describedby={error ? `${fieldName}-error` : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && (
-                  <FieldErrorMessage id={`${fieldName}-error`} error={error} />
-                )}
-              </div>
+              </InputContainer>
             );
 
           default:
             return (
-              <div
-                key={fieldName}
-                className={`${containerClassName}`}
-                style={containerStyle}
+              <InputContainer
+                fieldName={fieldName}
+                containerClassName={containerClassName}
+                containerStyle={containerStyle}
+                labelClassName={labelClassName}
+                labelStyle={labelStyle}
+                label={label}
+                showFieldErrors={showFieldErrors}
+                error={error}
               >
-                <label
-                  className={`${labelClassName}`}
-                  style={labelStyle}
-                  htmlFor={fieldName}
-                >
-                  {label}
-                </label>
                 <input
                   id={fieldName}
                   type="text"
@@ -667,8 +643,7 @@ const useSmartForm = (
                   aria-describedby={error ? "name-error" : ""}
                   aria-required={fieldValue.required ? "true" : "false"}
                 />
-                {showFieldErrors && <FieldErrorMessage error={error} />}
-              </div>
+              </InputContainer>
             );
         }
       } else {
