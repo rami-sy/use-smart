@@ -17,13 +17,11 @@
 
 import React, { useCallback, useMemo, useState } from "react";
 import { useImmerReducer } from "use-immer";
-import InputContainer from "./input-container";
-import FieldErrorMessage from "./field-error-message";
-import Input from "./input";
-import Radio from "./radio";
-import Select from "./select";
-import Textarea from "./textarea";
-import File from "./file";
+import Input from "./inputs/input";
+import Radio from "./inputs/radio";
+import Select from "./inputs/select";
+import Textarea from "./inputs/textarea";
+import File from "./inputs/file";
 
 const useSmartForm = (
   initialFormFormat,
@@ -278,8 +276,8 @@ const useSmartForm = (
             "password" ||
             "number" ||
             "date" ||
-            "checkbox" ||
-            "time":
+            "time" ||
+            "checkbox":
             return (
               <Input
                 fieldName={fieldName}
