@@ -19,7 +19,11 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useImmerReducer } from "use-immer";
 import InputContainer from "./input-container";
 import FieldErrorMessage from "./field-error-message";
-import Input from "./text-input";
+import Input from "./input";
+import Radio from "./radio";
+import Select from "./select";
+import Textarea from "./textarea";
+import File from "./file";
 
 const useSmartForm = (
   initialFormFormat,
@@ -260,15 +264,24 @@ const useSmartForm = (
           labelClassName = "",
           labelStyle = {},
           label,
+          rows,
+          cols,
         } = fieldValue;
         if (!shouldShowField) {
           return null;
         }
 
         switch (type) {
-          case "text" || "email" || "password" || "number" || "date":
+          case "text" ||
+            "email" ||
+            "time" ||
+            "password" ||
+            "number" ||
+            "date" ||
+            "checkbox" ||
+            "time":
             return (
-              <TextInput
+              <Input
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -288,9 +301,9 @@ const useSmartForm = (
               />
             );
 
-          case "checkbox":
+          case "radio":
             return (
-              <Checkbox
+              <Radio
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -305,42 +318,12 @@ const useSmartForm = (
                 className={className}
                 style={style}
                 fieldValue={fieldValue}
+                options={options}
               />
-            );
-          case "radio":
-            return (
-              <InputContainer
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-              >
-                {options.map((option) => (
-                  <label key={option}>
-                    <input
-                      type="radio"
-                      value={option}
-                      checked={data.state[fieldName] === option}
-                      onBlur={() => handleFieldBlur(fieldName)}
-                      onChange={(e) => handleChange(fieldName, e.target.value)}
-                      className={className}
-                      style={style}
-                      aria-invalid={!!error}
-                      aria-describedby={error ? "name-error" : ""}
-                      aria-required={fieldValue.required ? "true" : "false"}
-                    />
-                    {option}
-                  </label>
-                ))}
-              </InputContainer>
             );
           case "select":
             return (
-              <InputContainer
+              <Select
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -349,30 +332,19 @@ const useSmartForm = (
                 label={label}
                 showFieldErrors={showFieldErrors}
                 error={error}
-              >
-                <select
-                  id={fieldName}
-                  value={data.state[fieldName]}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                >
-                  {options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </InputContainer>
+                data={data}
+                handleFieldBlur={handleFieldBlur}
+                handleChange={handleChange}
+                className={className}
+                style={style}
+                fieldValue={fieldValue}
+                options={options}
+              />
             );
 
           case "textarea": // Add support for textarea field
             return (
-              <InputContainer
+              <Textarea
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -381,24 +353,20 @@ const useSmartForm = (
                 label={label}
                 showFieldErrors={showFieldErrors}
                 error={error}
-              >
-                <textarea
-                  id={fieldName}
-                  value={data.state[fieldName]}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
+                data={data}
+                handleFieldBlur={handleFieldBlur}
+                handleChange={handleChange}
+                className={className}
+                style={style}
+                fieldValue={fieldValue}
+                rows={rows}
+                cols={cols}
+              />
             );
 
           case "file":
             return (
-              <InputContainer
+              <File
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -407,103 +375,15 @@ const useSmartForm = (
                 label={label}
                 showFieldErrors={showFieldErrors}
                 error={error}
-              >
-                <input
-                  id={fieldName}
-                  type="file"
-                  onChange={(e) => handleChange(fieldName, e.target.files)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
+                handleChange={handleChange}
+                className={className}
+                style={style}
+                fieldValue={fieldValue}
+              />
             );
-          case "phone":
-            return (
-              <InputContainer
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-              >
-                <input
-                  id={fieldName}
-                  type="tel"
-                  value={data.state[fieldName]}
-                  placeholder={placeholder}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? `${fieldName}-error` : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
-            );
-
-          case "address":
-            return (
-              <InputContainer
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-              >
-                <textarea
-                  id={fieldName}
-                  value={data.state[fieldName]}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? `${fieldName}-error` : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
-            );
-
-          case "time":
-            return (
-              <InputContainer
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-              >
-                <input
-                  id={fieldName}
-                  type="time"
-                  value={data.state[fieldName]}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? `${fieldName}-error` : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
-            );
-
           default:
             return (
-              <InputContainer
+              <Input
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -512,21 +392,15 @@ const useSmartForm = (
                 label={label}
                 showFieldErrors={showFieldErrors}
                 error={error}
-              >
-                <input
-                  id={fieldName}
-                  type="text"
-                  value={data.state[fieldName]}
-                  placeholder={placeholder}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.value)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
+                data={data}
+                type={type}
+                placeholder={placeholder}
+                handleFieldBlur={handleFieldBlur}
+                handleChange={handleChange}
+                className={className}
+                style={style}
+                fieldValue={fieldValue}
+              />
             );
         }
       } else {

@@ -1,7 +1,7 @@
 import React from "react";
 import InputContainer from "./input-container";
 
-const TextInput = ({
+const Input = ({
   fieldName,
   containerClassName,
   containerStyle,
@@ -36,15 +36,20 @@ const TextInput = ({
         value={data.state[fieldName]}
         placeholder={placeholder}
         onBlur={() => handleFieldBlur(fieldName)}
-        onChange={(e) => handleChange(fieldName, e.target.value)}
+        onChange={(e) =>
+          handleChange(
+            fieldName,
+            type === "checkbox" ? e.target.checked : e.target.value
+          )
+        }
         className={className}
         style={style}
         aria-invalid={!!error}
-        aria-describedby={error ? "name-error" : ""}
+        aria-describedby={error ? `${fieldName}-error` : ""}
         aria-required={fieldValue.required ? "true" : "false"}
       />
     </InputContainer>
   );
 };
 
-export default TextInput;
+export default Input;
