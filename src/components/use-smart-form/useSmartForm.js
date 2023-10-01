@@ -19,7 +19,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useImmerReducer } from "use-immer";
 import InputContainer from "./input-container";
 import FieldErrorMessage from "./field-error-message";
-import Input from "./input";
+import Input from "./text-input";
 
 const useSmartForm = (
   initialFormFormat,
@@ -240,6 +240,7 @@ const useSmartForm = (
       if (fieldName === "errors" || fieldName === "isLoading") {
         return null; // Skip rendering errors and loading state
       }
+
       const error = data.errors[fieldName];
       const shouldShowField =
         !fieldConfig.showWhen || fieldConfig.showWhen(data.state);
@@ -267,7 +268,7 @@ const useSmartForm = (
         switch (type) {
           case "text" || "email" || "password" || "number" || "date":
             return (
-              <Input
+              <TextInput
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -289,7 +290,7 @@ const useSmartForm = (
 
           case "checkbox":
             return (
-              <InputContainer
+              <Checkbox
                 fieldName={fieldName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
@@ -298,20 +299,13 @@ const useSmartForm = (
                 label={label}
                 showFieldErrors={showFieldErrors}
                 error={error}
-              >
-                <input
-                  id={fieldName}
-                  type="checkbox"
-                  checked={data.state[fieldName]}
-                  onBlur={() => handleFieldBlur(fieldName)}
-                  onChange={(e) => handleChange(fieldName, e.target.checked)}
-                  className={className}
-                  style={style}
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "name-error" : ""}
-                  aria-required={fieldValue.required ? "true" : "false"}
-                />
-              </InputContainer>
+                data={data}
+                handleFieldBlur={handleFieldBlur}
+                handleChange={handleChange}
+                className={className}
+                style={style}
+                fieldValue={fieldValue}
+              />
             );
           case "radio":
             return (

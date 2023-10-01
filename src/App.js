@@ -87,6 +87,19 @@ const App = () => {
         type: "select",
         options: ["New York", "California", "Texas"],
       },
+      isGraterThan18: {
+        type: "checkbox",
+        value: false,
+        validation: {
+          required: true,
+        },
+        label: "Is greater than 18?",
+      },
+      gender: {
+        options: ["male", "female", "other"],
+        type: "radio",
+        value: "male",
+      },
     },
     handleSubmit,
     {

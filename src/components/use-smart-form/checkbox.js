@@ -1,7 +1,6 @@
 import React from "react";
-import InputContainer from "./input-container";
 
-const Input = ({
+const Checkbox = ({
   fieldName,
   containerClassName,
   containerStyle,
@@ -11,8 +10,6 @@ const Input = ({
   showFieldErrors,
   error,
   data,
-  type,
-  placeholder,
   handleFieldBlur,
   handleChange,
   className,
@@ -32,11 +29,10 @@ const Input = ({
     >
       <input
         id={fieldName}
-        type={type}
-        value={data.state[fieldName]}
-        placeholder={placeholder}
+        type="checkbox"
+        checked={data.state[fieldName]}
         onBlur={() => handleFieldBlur(fieldName)}
-        onChange={(e) => handleChange(fieldName, e.target.value)}
+        onChange={(e) => handleChange(fieldName, e.target.checked)}
         className={className}
         style={style}
         aria-invalid={!!error}
@@ -47,4 +43,4 @@ const Input = ({
   );
 };
 
-export default Input;
+export default Checkbox;
