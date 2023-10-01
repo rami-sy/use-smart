@@ -95,7 +95,6 @@ import { useSmartForm } from "use-smart";
 const initialFormFormat = {
   name: {
     type: "text",
-    placeholder: "Your name",
     className: "name-input",
   },
   email: {
@@ -106,9 +105,27 @@ const initialFormFormat = {
     labelClassName: "text-gray-700",
   },
   gender: {
-    type: "checkbox",
+    type: "radio",
     options: ["male", "female"],
+    containerStyle: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    labelStyle: {
+      color: "red",
+    },
+    style: {
+      border: "1px solid red",
+    },
+
   },
+  isGraduated: {
+    type: "checkbox",
+    label: "Are you graduated?",
+    value: false,
+    required: true,
+  },
+
   password: {
     type: "password",
     id: "password",
@@ -116,7 +133,7 @@ const initialFormFormat = {
     validation: {
       minLength: 8,
     },
-    constainerStyle: {
+    containerStyle: {
       display: "flex",
       flexDirection: "column",
     },
@@ -128,7 +145,7 @@ const initialFormFormat = {
     },
   },
   city: {
-    options: ["istanbul", "madreid", "london", "paris", "berlin", "rome"],
+    options: ["istanbul", "madrid", "london", "paris", "berlin", "rome"],
     type: "select",
     placeholder: "Select a city",
     onChange: (e) => {
