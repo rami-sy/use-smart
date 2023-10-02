@@ -201,7 +201,7 @@ const useSmartForm = (
     }
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     dispatch({ type: "updateLoading", payload: true });
 
@@ -228,21 +228,16 @@ const useSmartForm = (
       dispatch({ type: "updateLoading", payload: false });
       dispatch({ type: "updateSubmissionError", payload: error.message });
     }
-  };
+  }, []);
 
   const reset = () => {
     dispatch({ type: "updateField", payload: initialState.state });
     dispatch({ type: "resetErrors" });
   };
 
-  const renderFormInputs = useMemo(() => {
-    return Object.entries(initialFormFormat).map(([fieldName, fieldValue]) => {
+  const renderInput = useCallback(
+    (fieldName, fieldValue) => {
       const fieldConfig = initialFormFormat[fieldName];
-
-      if (fieldName === "errors" || fieldName === "isLoading") {
-        return null; // Skip rendering errors and loading state
-      }
-
       const error = data.errors[fieldName];
       const shouldShowField =
         !fieldConfig.showWhen || fieldConfig.showWhen(data.state);
@@ -250,177 +245,86 @@ const useSmartForm = (
       if (!shouldShowField) {
         return null;
       }
-      if (typeof fieldValue === "object" && fieldValue !== null) {
-        const {
-          type,
-          options,
-          placeholder = fieldName.toLocaleUpperCase(),
-          className = "",
-          style = {},
-          containerClassName = "",
-          containerStyle = {},
-          labelClassName = "",
-          labelStyle = {},
-          label,
-          rows,
-          cols,
-        } = fieldValue;
-        if (!shouldShowField) {
-          return null;
-        }
 
-        switch (type) {
-          case "text" ||
-            "email" ||
-            "time" ||
-            "password" ||
-            "number" ||
-            "date" ||
-            "time" ||
-            "checkbox":
-            return (
-              <Input
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-                data={data}
-                type={type}
-                placeholder={placeholder}
-                handleFieldBlur={handleFieldBlur}
-                handleChange={handleChange}
-                className={className}
-                style={style}
-                fieldValue={fieldValue}
-              />
-            );
+      const commonProps = {
+        fieldName,
+        containerClassName: fieldValue.containerClassName,
+        containerStyle: fieldValue.containerStyle,
+        labelClassName: fieldValue.labelClassName,
+        labelStyle: fieldValue.labelStyle,
+        label: fieldValue.label,
+        showFieldErrors: mergedOptions.showFieldErrors,
+        error,
+        data,
+        handleFieldBlur,
+        handleChange,
+        className: fieldValue.className,
+        style: fieldValue.style,
+        fieldValue,
+      };
 
-          case "radio":
-            return (
-              <Radio
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-                data={data}
-                handleFieldBlur={handleFieldBlur}
-                handleChange={handleChange}
-                className={className}
-                style={style}
-                fieldValue={fieldValue}
-                options={options}
-              />
-            );
-          case "select":
-            return (
-              <Select
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-                data={data}
-                handleFieldBlur={handleFieldBlur}
-                handleChange={handleChange}
-                className={className}
-                style={style}
-                fieldValue={fieldValue}
-                options={options}
-              />
-            );
-
-          case "textarea": // Add support for textarea field
-            return (
-              <Textarea
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-                data={data}
-                handleFieldBlur={handleFieldBlur}
-                handleChange={handleChange}
-                className={className}
-                style={style}
-                fieldValue={fieldValue}
-                rows={rows}
-                cols={cols}
-              />
-            );
-
-          case "file":
-            return (
-              <File
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-                handleChange={handleChange}
-                className={className}
-                style={style}
-                fieldValue={fieldValue}
-              />
-            );
-          default:
-            return (
-              <Input
-                fieldName={fieldName}
-                containerClassName={containerClassName}
-                containerStyle={containerStyle}
-                labelClassName={labelClassName}
-                labelStyle={labelStyle}
-                label={label}
-                showFieldErrors={showFieldErrors}
-                error={error}
-                data={data}
-                type={type}
-                placeholder={placeholder}
-                handleFieldBlur={handleFieldBlur}
-                handleChange={handleChange}
-                className={className}
-                style={style}
-                fieldValue={fieldValue}
-              />
-            );
-        }
-      } else {
-        return (
-          <div key={fieldName}>
-            <label htmlFor={fieldName}>{fieldName}</label>
-            <input
-              id={fieldName}
-              type="text"
-              placeholder={fieldName.toLocaleUpperCase()}
-              value={data.state[fieldName]}
-              onChange={(e) => handleChange(fieldName, e.target.value)}
-              aria-invalid={!!error}
-              aria-describedby={error ? "name-error" : ""}
-              aria-required={fieldValue.required ? "true" : "false"}
+      switch (fieldValue.type) {
+        case "text":
+        case "email":
+        case "password":
+        case "number":
+        case "date":
+        case "time":
+        case "checkbox":
+          return (
+            <Input
+              {...commonProps}
+              type={fieldValue.type}
+              placeholder={
+                fieldValue.placeholder || fieldName.toLocaleUpperCase()
+              }
             />
-          </div>
-        );
+          );
+
+        case "radio":
+          return <Radio {...commonProps} options={fieldValue.options} />;
+
+        case "select":
+          return <Select {...commonProps} options={fieldValue.options} />;
+
+        case "textarea":
+          return (
+            <Textarea
+              {...commonProps}
+              rows={fieldValue.rows}
+              cols={fieldValue.cols}
+            />
+          );
+
+        case "file":
+          return <File {...commonProps} />;
+
+        default:
+          return (
+            <div key={fieldName}>
+              <label htmlFor={fieldName}>{fieldName}</label>
+              <input
+                id={fieldName}
+                type="text"
+                placeholder={fieldName.toLocaleUpperCase()}
+                value={data.state[fieldName]}
+                onChange={(e) => handleChange(fieldName, e.target.value)}
+                aria-invalid={!!error}
+                aria-describedby={error ? `${fieldName}-error` : ""}
+                aria-required={fieldValue.required ? "true" : "false"}
+              />
+            </div>
+          );
       }
+    },
+    [data.state, data.errors, mergedOptions.showFieldErrors]
+  );
+
+  const renderFormInputs = useMemo(() => {
+    return Object.entries(initialFormFormat).map(([fieldName, fieldValue]) => {
+      return renderInput(fieldName, fieldValue);
     });
   }, [data.state, data.errors, initialFormFormat, showFieldErrors]);
-
   const ErrorMessage = ({ fieldName }) => {
     const error = data.errors[fieldName];
     return error ? <div>{error}</div> : null;
