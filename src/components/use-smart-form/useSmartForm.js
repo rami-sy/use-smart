@@ -22,7 +22,21 @@ import Radio from "./inputs/radio";
 import Select from "./inputs/select";
 import Textarea from "./inputs/textarea";
 import File from "./inputs/file";
-
+import validateField from "./useValidation";
+const renderInputComponents = {
+  text: Input,
+  email: Input,
+  password: Input,
+  number: Input,
+  date: Input,
+  time: Input,
+  checkbox: Input,
+  undefined: Input,
+  radio: Radio,
+  select: Select,
+  textarea: Textarea,
+  file: File,
+};
 const useSmartForm = (
   initialFormFormat,
   onSubmit,
@@ -95,88 +109,16 @@ const useSmartForm = (
 
   const [data, dispatch] = useImmerReducer(reducer, initialState);
 
-  const validateField = async (key, value) => {
-    const fieldConfig = initialFormFormat[key];
-    let error = "";
-
-    if (fieldConfig && fieldConfig.validation && !disableValidation) {
-      const { validation } = fieldConfig;
-
-      if (!error) {
-        if (validation.minLength && value.length < validation.minLength) {
-          error = `Field must be at least ${validation.minLength} characters long.`;
-        }
-
-        // add required validation
-        if (validation.required && !value) {
-          error = "Field is required.";
-        }
-
-        // add rgx validation
-        if (validation.regex && !validation.regex.test(value)) {
-          error = validation.rgxError || "Invalid value.";
-        }
-
-        // add email validation
-        if (validation.email && !value.includes("@")) {
-          error = "Field must be a valid email address.";
-        }
-
-        if (validation.maxLength && value.length > validation.maxLength) {
-          error = `Field must not exceed ${validation.maxLength} characters.`;
-        }
-
-        if (validation.min && parseFloat(value) < validation.min) {
-          error = `Value must be greater than or equal to ${validation.min}.`;
-        }
-
-        if (validation.max && parseFloat(value) > validation.max) {
-          error = `Value must be less than or equal to ${validation.max}.`;
-        }
-
-        if (validation.pattern && !validation.pattern.test(value)) {
-          error = validation.patternError || "Invalid value.";
-        }
-      }
-
-      dispatch({ type: "updateError", key, payload: error });
-
-      return !error;
-    }
-    if (
-      fieldConfig &&
-      typeof fieldConfig.customValidation === "function" &&
-      !disableValidation
-    ) {
-      const { customValidation } = fieldConfig;
-
-      try {
-        // Check if the custom validation function returns a promise
-        const validationPromise = customValidation(value);
-
-        if (validationPromise instanceof Promise) {
-          // If it's a promise, await its resolution
-          error = await validationPromise;
-        } else {
-          // If not a promise, use the returned value
-          error = validationPromise;
-        }
-      } catch (err) {
-        // Handle any errors thrown during validation
-        error = err.message;
-      }
-    }
-
-    if (showFieldErrors || fieldTouched[key]) {
-      dispatch({ type: "updateError", key, payload: error });
-    }
-
-    return true;
-  };
-
   const handleChange = useCallback((key, value) => {
     if (!disableValidation) {
-      validateField(key, value);
+      validateField(
+        key,
+        value,
+        initialFormFormat,
+        disableValidation,
+        dispatch,
+        showFieldErrors
+      );
     }
 
     // Handle file input separately
@@ -201,7 +143,7 @@ const useSmartForm = (
     }
   }, []);
 
-  const handleSubmit = useCallback(async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch({ type: "updateLoading", payload: true });
 
@@ -228,15 +170,19 @@ const useSmartForm = (
       dispatch({ type: "updateLoading", payload: false });
       dispatch({ type: "updateSubmissionError", payload: error.message });
     }
-  }, []);
+  };
 
   const reset = () => {
     dispatch({ type: "updateField", payload: initialState.state });
     dispatch({ type: "resetErrors" });
   };
 
-  const renderInput = useCallback(
-    (fieldName, fieldValue) => {
+  const renderFormInputs = useMemo(() => {
+    return Object.entries(initialFormFormat).map(([fieldName, fieldValue]) => {
+      if (fieldName === "errors" || fieldName === "isLoading") {
+        return null; // Skip rendering errors and loading state
+      }
+
       const fieldConfig = initialFormFormat[fieldName];
       const error = data.errors[fieldName];
       const shouldShowField =
@@ -246,83 +192,63 @@ const useSmartForm = (
         return null;
       }
 
-      const commonProps = {
-        fieldName,
-        containerClassName: fieldValue.containerClassName,
-        containerStyle: fieldValue.containerStyle,
-        labelClassName: fieldValue.labelClassName,
-        labelStyle: fieldValue.labelStyle,
-        label: fieldValue.label,
-        showFieldErrors: mergedOptions.showFieldErrors,
-        error,
-        data,
-        handleFieldBlur,
-        handleChange,
-        className: fieldValue.className,
-        style: fieldValue.style,
-        fieldValue,
-      };
+      if (typeof fieldValue === "object" && fieldValue !== null) {
+        const {
+          type = "text",
+          options,
+          placeholder = fieldName.toLocaleUpperCase(),
+          className = "",
+          style = {},
+          containerClassName = "",
+          containerStyle = {},
+          labelClassName = "",
+          labelStyle = {},
+          label,
+          rows,
+          cols,
+        } = fieldValue;
 
-      switch (fieldValue.type) {
-        case "text":
-        case "email":
-        case "password":
-        case "number":
-        case "date":
-        case "time":
-        case "checkbox":
-          return (
-            <Input
-              {...commonProps}
-              type={fieldValue.type}
-              placeholder={
-                fieldValue.placeholder || fieldName.toLocaleUpperCase()
-              }
+        const commonProps = {
+          fieldName,
+          containerClassName,
+          containerStyle,
+          labelClassName,
+          labelStyle,
+          label,
+          showFieldErrors,
+          error,
+          data,
+          placeholder,
+          handleFieldBlur,
+          handleChange,
+          className,
+          style,
+          fieldValue,
+          options,
+          rows,
+          cols,
+        };
+        const Component = renderInputComponents[type];
+        if (Component) {
+          return <Component {...commonProps} type={type} />;
+        }
+      } else {
+        return (
+          <div key={fieldName}>
+            <label htmlFor={fieldName}>{fieldName}</label>
+            <input
+              id={fieldName}
+              type="text"
+              placeholder={fieldName.toLocaleUpperCase()}
+              value={data.state[fieldName]}
+              onChange={(e) => handleChange(fieldName, e.target.value)}
+              aria-invalid={!!error}
+              aria-describedby={error ? `${fieldName}-error` : ""}
+              aria-required={fieldValue.required ? "true" : "false"}
             />
-          );
-
-        case "radio":
-          return <Radio {...commonProps} options={fieldValue.options} />;
-
-        case "select":
-          return <Select {...commonProps} options={fieldValue.options} />;
-
-        case "textarea":
-          return (
-            <Textarea
-              {...commonProps}
-              rows={fieldValue.rows}
-              cols={fieldValue.cols}
-            />
-          );
-
-        case "file":
-          return <File {...commonProps} />;
-
-        default:
-          return (
-            <div key={fieldName}>
-              <label htmlFor={fieldName}>{fieldName}</label>
-              <input
-                id={fieldName}
-                type="text"
-                placeholder={fieldName.toLocaleUpperCase()}
-                value={data.state[fieldName]}
-                onChange={(e) => handleChange(fieldName, e.target.value)}
-                aria-invalid={!!error}
-                aria-describedby={error ? `${fieldName}-error` : ""}
-                aria-required={fieldValue.required ? "true" : "false"}
-              />
-            </div>
-          );
+          </div>
+        );
       }
-    },
-    [data.state, data.errors, mergedOptions.showFieldErrors]
-  );
-
-  const renderFormInputs = useMemo(() => {
-    return Object.entries(initialFormFormat).map(([fieldName, fieldValue]) => {
-      return renderInput(fieldName, fieldValue);
     });
   }, [data.state, data.errors, initialFormFormat, showFieldErrors]);
   const ErrorMessage = ({ fieldName }) => {

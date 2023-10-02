@@ -1,7 +1,7 @@
 import React from "react";
 // import { useSmartForm } from "./components/use-smart-form";
 import SmartForm from "./components/use-smart-form/SmartForm";
-import { useSmartForm } from "use-smart";
+import { useSmartForm } from "./use-smart";
 // import { useSmartForm } from "use-smart";
 // useSmartForm
 // Define the roles and permissions
